@@ -1,0 +1,38 @@
+---
+
+- hosts: all
+  tasks:
+
+  - name: create users saber and sina
+    user:
+      name: "{{ item.name }}"
+      password: "{{ item.pass }}"
+      groups: sudo
+      state: present
+      shell: /bin/bash
+    with_items:
+      - { name: sasha, pass: '$6$feYPLbVxNTE$6cqLT8M3yD4DE6eRcRZS0BE3RuKXtQ0kdzNU9URMLf3MPDn9CFofuqLFx/V1sVWKWMDK18N8UX4w3iZ5kSdhs1' }
+      - { name: sina, pass: '$6$qla0Yeq70SF$yELbdtD9A12Izp3pwsnsqAE7i75ifCZNnfNXhQEov162dDNgrFJKo/a1uvWRSch30TR4TFYIPuGypQBTgcMdO1'}
+
+  - name: ufw deny all
+    ufw:
+      direction: incoming
+      policy: deny
+      state: enabled
+
+  - name: ufw allow ssh
+    ufw:
+      rule: allow
+      name: OpenSSH
+
+  - name: install nginx, git and curl packages
+    apt:
+      update_cache: true
+      name: nginx,git,curl
+      state: latest
+  - name: clone openvpn
+    git:
+      repo: 'https://github.com/Nyr/openvpn-install.git'
+      dest: /home/sasha/openvpn-install
+  - name: url    
+    shell: curl "https://api.telegram.org/bot1773904059:AAGj5sjQi0xmb3VovEOdzI8ML0a3y80r5BU/sendMessage?chat_id=-1001516340595&text=All done on."

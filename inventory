@@ -1,0 +1,6 @@
+172.16.96.130
+[all:vars]
+ansible_user=root
+ansible_ssh_pass=root795120
+users=[sasha,sina]
+pass=[$6$feYPLbVxNTE$6cqLT8M3yD4DE6eRcRZS0BE3RuKXtQ0kdzNU9URMLf3MPDn9CFofuqLFx/V1sVWKWMDK18N8UX4w3iZ5kSdhs1,$6$qla0Yeq70SF$yELbdtD9A12Izp3pwsnsqAE7i75ifCZNnfNXhQEov162dDNgrFJKo/a1uvWRSch30TR4TFYIPuGypQBTgcMdO1]
