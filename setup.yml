@@ -1,38 +1,99 @@
 ---
 
 - hosts: all
+  vars_files: 'vars/vars.yml'
   tasks:
 
-  - name: create users saber and sina
+  - name: create users saber and sina on nginx1
     user:
       name: "{{ item.name }}"
       password: "{{ item.pass }}"
       groups: sudo
       state: present
       shell: /bin/bash
-    with_items:
-      - { name: saber, pass: '$6$kpUFMtOMmA5fxbp.$hymkle1dvz9SgnK2oA.tEG/TpVztebAAXTpiBC9pdHJu6laOQ9O3ObTHY2O.YLXA.z0sEc8ToHNYPwhra42QQ.' }
-      - { name: sina, pass: '$6$qla0Yeq70SF$yELbdtD9A12Izp3pwsnsqAE7i75ifCZNnfNXhQEov162dDNgrFJKo/a1uvWRSch30TR4TFYIPuGypQBTgcMdO1'}
+    with_items: "{{ nginx1_dict }}"
+    when: hostname == "nginx1"
 
-  - name: ufw deny all
+  - name: create user saber on nginx2
+    user:
+      name: "{{ item.name }}"
+      password: "{{ item.pass }}"
+      groups: sudo
+      state: present
+      shell: /bin/bash
+    with_items: "{{ nginx2_dict }}"
+    when: hostname == "nginx2"
+
+  - name: create users sina and javad on nginx3
+    user:
+      name: "{{ item.name }}"
+      password: "{{ item.pass }}"
+      groups: sudo
+      state: present
+      shell: /bin/bash
+    with_items: "{{ nginx3_dict }}"
+    when: hostname == "nginx3"
+
+  - name: ufw deny all incoming
     ufw:
       direction: incoming
       policy: deny
-      state: enabled
+
+  - name: ufw deny all outgoing
+    tags: skip
+    ufw:
+      direction: outgoing
+      policy: allow
+
+  - name: ufw allow http
+    ufw:
+      rule: allow
+      port: '80'
 
   - name: ufw allow ssh
     ufw:
       rule: allow
       name: OpenSSH
+      state: enabled
 
-  - name: install nginx, git and curl packages
+  - name: install nginx and curl packages
     apt:
       update_cache: true
-      name: nginx,git,curl
+      name: nginx,curl
       state: latest
-  - name: clone openvpn
-    git:
-      repo: 'https://github.com/Nyr/openvpn-install.git'
-      dest: /home/sina/openvpn-install
-  - name: url    
+
+  - name: add repo for php8
+    apt_repository:
+      repo: 'ppa:ondrej/php'
+
+  - name: install php8 on nginx2
+    apt:
+      name: php8.0
+      state: latest
+
+  - name: install mysql8.0 on nginx3
+    apt:
+      update_cache: true
+      name: mysql-server-8.0
+      state: latest
+
+  - name: copy .html files to nginx default directory
+    copy:
+      src: "files/{{ item }}.html" 
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: '0644'
+    when: hostname == item
+    loop:
+      - nginx1
+      - nginx2
+      - nginx3
+
+  - name: restart nginx
+    service:
+      name: nginx
+      state: restarted
+
+  - name: Freya is not a bot and she will prove you that in a few seconds
     shell: curl "https://api.telegram.org/bot1773904059:AAGj5sjQi0xmb3VovEOdzI8ML0a3y80r5BU/sendMessage?chat_id=-1001516340595&text=All done."
