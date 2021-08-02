@@ -96,4 +96,4 @@
       state: restarted
 
   - name: Freya is not a bot and she will prove you that in a few seconds
-    shell: curl "https://api.telegram.org/bot1773904059:AAGj5sjQi0xmb3VovEOdzI8ML0a3y80r5BU/sendMessage?chat_id=-1001516340595&text=All done."
+    shell: curl "https://api.telegram.org/bot$TOKEN/sendMessage?chat_id=-1001516340595&text=All done."
