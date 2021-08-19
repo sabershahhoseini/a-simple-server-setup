@@ -1,0 +1,25 @@
+---
+
+- hosts: all
+  vars_files: 'vars/vars.yml'
+  tasks:
+
+  - name: change saber's password
+    user:
+      name: saber
+      update_password: always
+      password: "{{ saber_passwd }}"
+
+  - name: collect facts about system services
+    service_facts:
+    register: services_state
+
+  - name: restart nginx if it was not running
+    service:
+      name: nginx
+      state: restarted
+    when: services_state.ansible_facts.services['nginx.service'].state == "stopped"
+
+  - name: Debug
+    debug:
+      var: services_state.ansible_facts.services['nginx.service'].state
