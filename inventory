@@ -1,7 +1,5 @@
 [nginx]
-nginx1 ansible_host=172.16.96.128 hostname=nginx1
-nginx2 ansible_host=172.16.96.129 hostname=nginx2
-nginx3 ansible_host=172.16.96.130 hostname=nginx3
+nginx1 ansible_host=172.16.96.129 hostname=nginx1
 [all:vars]
 ansible_user=#root
 ansible_ssh_pass=#root_password
